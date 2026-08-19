@@ -67,84 +67,6 @@
   gap: 1rem;
 }
 
-.day-card {
-  min-height: 16rem;
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-sm);
-}
-
-.day-card__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.15rem 1.25rem;
-  border-bottom: 1px solid var(--color-border);
-  background: linear-gradient(135deg, #fff, #f8f7f2);
-}
-
-.day-card__header > div {
-  display: flex;
-  align-items: baseline;
-  gap: 0.45rem;
-}
-
-.day-card__header span {
-  color: var(--color-primary);
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.day-card__header h2 {
-  margin: 0;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 1.25rem;
-  font-weight: 500;
-}
-
-.day-card__header .day-card__count {
-  display: grid;
-  width: 1.65rem;
-  height: 1.65rem;
-  place-items: center;
-  border-radius: 999px;
-  color: var(--color-text-muted);
-  background: var(--color-surface-muted);
-  font-size: 0.7rem;
-}
-
-.day-card__empty {
-  display: grid;
-  min-height: 11.75rem;
-  place-content: center;
-  justify-items: center;
-  padding: 1rem;
-  color: var(--color-text-muted);
-  text-align: center;
-}
-
-.day-card__empty .material-icons-outlined {
-  margin-bottom: 0.7rem;
-  opacity: 0.42;
-  font-size: 2rem;
-}
-
-.day-card__empty p {
-  margin: 0;
-  color: var(--color-text);
-  font-size: 0.85rem;
-  font-weight: 650;
-}
-
-.day-card__empty small {
-  margin-top: 0.2rem;
-  font-size: 0.72rem;
-}
-
 @media (max-width: 68rem) {
   .week-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -165,13 +87,5 @@
 @media (max-width: 32rem) {
   .week-grid {
     grid-template-columns: 1fr;
-  }
-
-  .day-card {
-    min-height: 12rem;
-  }
-
-  .day-card__empty {
-    min-height: 8rem;
   }
 }

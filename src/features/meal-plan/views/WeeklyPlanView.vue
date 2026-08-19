@@ -1,5 +1,13 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
+
 import { WEEKDAYS } from '@/common/constants/weekdays'
+import DayCard from '@/features/meal-plan/components/day-card/DayCard.vue'
+import MealForm from '@/features/meal-plan/components/meal-form/MealForm.vue'
+import { useMealPlanStore } from '@/features/meal-plan/stores/meal-plan.store'
+
+const mealPlanStore = useMealPlanStore()
+const { mealCount, mealsByDay } = storeToRefs(mealPlanStore)
 </script>
 
 <template>
@@ -12,27 +20,25 @@ import { WEEKDAYS } from '@/common/constants/weekdays'
           Organiza tus comidas de un vistazo y haz que decidir qué cocinar sea la parte fácil.
         </p>
       </div>
-      <div class="meal-count" aria-label="0 platos planificados">
-        <strong>0</strong>
-        <span>platos esta semana</span>
+      <div
+        class="meal-count"
+        :aria-label="`${mealCount} ${mealCount === 1 ? 'plato planificado' : 'platos planificados'}`"
+      >
+        <strong>{{ mealCount }}</strong>
+        <span>{{ mealCount === 1 ? 'plato esta semana' : 'platos esta semana' }}</span>
       </div>
     </header>
 
+    <MealForm />
+
     <div class="week-grid" aria-label="Días de la semana">
-      <article v-for="day in WEEKDAYS" :key="day.value" class="day-card">
-        <header class="day-card__header">
-          <div>
-            <span>{{ day.shortLabel }}</span>
-            <h2>{{ day.label }}</h2>
-          </div>
-          <span class="day-card__count" aria-label="0 platos">0</span>
-        </header>
-        <div class="day-card__empty">
-          <span class="material-icons-outlined" aria-hidden="true">restaurant_menu</span>
-          <p>Aún no hay platos</p>
-          <small>La mesa está esperando.</small>
-        </div>
-      </article>
+      <DayCard
+        v-for="day in WEEKDAYS"
+        :key="day.value"
+        :day="day"
+        :meals="mealsByDay[day.value]"
+        @remove="mealPlanStore.removeMeal"
+      />
     </div>
   </section>
 </template>
