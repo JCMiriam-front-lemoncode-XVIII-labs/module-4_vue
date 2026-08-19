@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import WeeklyPlanView from '@/features/meal-plan/views/WeeklyPlanView.vue'
 import { useFavoritesStore } from '@/features/favorites/stores/favorites.store'
+import { useMealPlanStore } from '@/features/meal-plan/stores/meal-plan.store'
 
 describe('WeeklyPlanView', () => {
   beforeEach(() => {
@@ -11,12 +12,11 @@ describe('WeeklyPlanView', () => {
   })
 
   it('supports adding and removing a meal from the weekly plan', async () => {
-    const wrapper = mount(WeeklyPlanView)
-
-    await wrapper.get('input[name="name"]').setValue('Crema de calabaza')
-    await wrapper.get('select[name="day"]').setValue('wednesday')
-    await wrapper.get('select[name="category"]').setValue('dinner')
-    await wrapper.get('form').trigger('submit')
+    const store = useMealPlanStore()
+    store.addMeal({ name: 'Crema de calabaza', day: 'wednesday', category: 'dinner' })
+    const wrapper = mount(WeeklyPlanView, {
+      global: { stubs: { RouterLink: { template: '<a><slot /></a>' } } },
+    })
 
     expect(wrapper.get('.meal-count strong').text()).toBe('1')
     expect(wrapper.text()).toContain('Crema de calabaza')
@@ -38,5 +38,28 @@ describe('WeeklyPlanView', () => {
 
     expect(wrapper.get('.meal-count strong').text()).toBe('0')
     expect(wrapper.find('button[aria-label="Eliminar Crema de calabaza"]').exists()).toBe(false)
+  })
+
+  it('filters planned meals by name, category and day', async () => {
+    const store = useMealPlanStore()
+    store.addMeal({ name: 'Pasta', day: 'monday', category: 'lunch' })
+    store.addMeal({ name: 'Sopa', day: 'friday', category: 'dinner' })
+    const wrapper = mount(WeeklyPlanView, {
+      global: { stubs: { RouterLink: { template: '<a><slot /></a>' } } },
+    })
+
+    await wrapper.get('#meal-search').setValue('pasta')
+
+    expect(wrapper.text()).toContain('Pasta')
+    expect(wrapper.text()).not.toContain('Sopa')
+
+    await wrapper.get('#meal-search').setValue('')
+    await wrapper.get('#meal-category-filter').setValue('dinner')
+
+    expect(wrapper.text()).not.toContain('Pasta')
+    expect(wrapper.text()).toContain('Sopa')
+
+    await wrapper.get('#meal-day-filter').setValue('friday')
+    expect(wrapper.findAll('.day-card')).toHaveLength(1)
   })
 })

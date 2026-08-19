@@ -1,13 +1,43 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
+import { computed, ref } from 'vue'
+import { RouterLink } from 'vue-router'
 
 import { WEEKDAYS } from '@/common/constants/weekdays'
+import type { MealCategory, Weekday } from '@/common/types/meal'
 import DayCard from '@/features/meal-plan/components/day-card/DayCard.vue'
-import MealForm from '@/features/meal-plan/components/meal-form/MealForm.vue'
+import MealFilters from '@/features/meal-plan/components/meal-filters/MealFilters.vue'
 import { useMealPlanStore } from '@/features/meal-plan/stores/meal-plan.store'
 
 const mealPlanStore = useMealPlanStore()
-const { mealCount, mealsByDay } = storeToRefs(mealPlanStore)
+const { mealCount, meals } = storeToRefs(mealPlanStore)
+const query = ref('')
+const selectedDay = ref<Weekday | 'all'>('all')
+const selectedCategory = ref<MealCategory | 'all'>('all')
+
+const hasActiveFilters = computed(
+  () =>
+    Boolean(query.value.trim()) || selectedDay.value !== 'all' || selectedCategory.value !== 'all',
+)
+
+const filteredMeals = computed(() => {
+  const normalizedQuery = query.value.trim().toLocaleLowerCase()
+
+  return meals.value.filter(
+    (meal) =>
+      (!normalizedQuery || meal.name.toLocaleLowerCase().includes(normalizedQuery)) &&
+      (selectedDay.value === 'all' || meal.day === selectedDay.value) &&
+      (selectedCategory.value === 'all' || meal.category === selectedCategory.value),
+  )
+})
+
+const visibleDays = computed(() =>
+  selectedDay.value === 'all'
+    ? WEEKDAYS
+    : WEEKDAYS.filter(({ value }) => value === selectedDay.value),
+)
+
+const mealsForDay = (day: Weekday) => filteredMeals.value.filter((meal) => meal.day === day)
 </script>
 
 <template>
@@ -29,14 +59,32 @@ const { mealCount, mealsByDay } = storeToRefs(mealPlanStore)
       </div>
     </header>
 
-    <MealForm />
+    <div class="plan-actions">
+      <RouterLink :to="{ name: 'meal-create' }">
+        <span class="material-icons-outlined" aria-hidden="true">add</span>
+        Añadir comida
+      </RouterLink>
+    </div>
+
+    <MealFilters
+      v-model:query="query"
+      v-model:day="selectedDay"
+      v-model:category="selectedCategory"
+      :result-count="filteredMeals.length"
+      :has-active-filters="hasActiveFilters"
+    />
+
+    <p v-if="hasActiveFilters && !filteredMeals.length" class="no-results" role="status">
+      <span class="material-icons-outlined" aria-hidden="true">search_off</span>
+      No encontramos platos con esos filtros.
+    </p>
 
     <div class="week-grid" aria-label="Días de la semana">
       <DayCard
-        v-for="day in WEEKDAYS"
+        v-for="day in visibleDays"
         :key="day.value"
         :day="day"
-        :meals="mealsByDay[day.value]"
+        :meals="mealsForDay(day.value)"
         @remove="mealPlanStore.removeMeal"
       />
     </div>

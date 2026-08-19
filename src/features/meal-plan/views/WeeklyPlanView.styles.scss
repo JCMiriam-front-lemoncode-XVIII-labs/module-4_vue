@@ -67,6 +67,47 @@
   gap: 1rem;
 }
 
+.plan-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+
+  a {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    padding: 0 1rem;
+    border-radius: var(--radius-sm);
+    color: white;
+    background: var(--color-primary);
+    font-size: 0.85rem;
+    font-weight: 750;
+    gap: 0.35rem;
+    text-decoration: none;
+  }
+
+  .material-icons-outlined {
+    font-size: 1.1rem;
+  }
+}
+
+.no-results {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem;
+  border-radius: var(--radius-sm);
+  margin: 0 0 1rem;
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+  font-size: 0.82rem;
+  gap: 0.4rem;
+
+  .material-icons-outlined {
+    font-size: 1.1rem;
+  }
+}
+
 @media (max-width: 68rem) {
   .week-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
