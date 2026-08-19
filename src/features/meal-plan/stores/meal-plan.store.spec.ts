@@ -66,4 +66,15 @@ describe('useMealPlanStore', () => {
     )
     expect(store.meals).toEqual([])
   })
+
+  it('clears every planned meal without deleting its dishes', () => {
+    const store = useMealPlanStore()
+    store.addMeal({ name: 'Gazpacho', day: 'monday', category: 'lunch' })
+    store.addMeal({ name: 'Pizza', day: 'friday', category: 'dinner' })
+
+    store.clearPlan()
+
+    expect(store.meals).toEqual([])
+    expect(store.mealCount).toBe(0)
+  })
 })

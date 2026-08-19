@@ -92,6 +92,10 @@ export const useMealPlanStore = defineStore(
       plannedMeals.value = plannedMeals.value.filter(({ id }) => id !== mealId)
     }
 
+    const clearPlan = (): void => {
+      plannedMeals.value = []
+    }
+
     const updateMeal = (mealId: Meal['id'], input: CreateMealInput): void => {
       const planned = plannedMeals.value.find(({ id }) => id === mealId)
       if (!planned) return
@@ -138,6 +142,7 @@ export const useMealPlanStore = defineStore(
       syncDishDays,
       syncMealDays,
       removeMeal,
+      clearPlan,
       migrateLegacyMeals,
     }
   },
