@@ -4,7 +4,8 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 import App from './app/App.vue'
 import router from './app/router'
-import './styles/main.css'
+import '@material-design-icons/font/outlined.css'
+import './styles/main.scss'
 
 const app = createApp(App)
 const pinia = createPinia()
