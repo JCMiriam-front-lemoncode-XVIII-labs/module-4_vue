@@ -6,6 +6,7 @@ export type MealCategory = 'breakfast' | 'lunch' | 'snack' | 'dinner'
 export interface Meal {
   id: string
   name: string
+  description?: string
   day: Weekday
   category: MealCategory
   createdAt: string

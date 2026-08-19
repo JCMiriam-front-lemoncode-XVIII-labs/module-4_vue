@@ -34,6 +34,30 @@ describe('useMealPlanStore', () => {
     expect(store.mealCount).toBe(1)
   })
 
+  it('updates a meal and moves it to another day', () => {
+    const store = useMealPlanStore()
+    const meal = store.addMeal({ name: 'Pasta', day: 'monday', category: 'lunch' })
+
+    store.updateMeal(meal.id, { name: 'Pasta al pesto', day: 'thursday', category: 'dinner' })
+
+    expect(store.meals[0]).toMatchObject({
+      name: 'Pasta al pesto',
+      day: 'thursday',
+      category: 'dinner',
+    })
+    expect(store.mealsByDay.monday).toEqual([])
+    expect(store.mealsByDay.thursday).toHaveLength(1)
+  })
+
+  it('does not duplicate the same meal on the same day', () => {
+    const store = useMealPlanStore()
+
+    store.addMeal({ name: 'Tortilla', day: 'monday', category: 'dinner' })
+    store.addMeal({ name: 'tortilla', day: 'monday', category: 'dinner' })
+
+    expect(store.meals).toHaveLength(1)
+  })
+
   it('rejects a meal with an empty name', () => {
     const store = useMealPlanStore()
 
