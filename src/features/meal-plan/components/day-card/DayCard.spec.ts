@@ -1,11 +1,14 @@
+import { createPinia, setActivePinia } from 'pinia'
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 import DayCard from '@/features/meal-plan/components/day-card/DayCard.vue'
 
 const monday = { value: 'monday', label: 'Lunes', shortLabel: 'Lun' } as const
 
 describe('DayCard', () => {
+  beforeEach(() => setActivePinia(createPinia()))
+
   it('renders its empty state', () => {
     const wrapper = mount(DayCard, {
       props: { day: monday, meals: [] },

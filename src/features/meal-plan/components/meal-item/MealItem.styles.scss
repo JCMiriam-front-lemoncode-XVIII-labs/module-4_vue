@@ -38,11 +38,16 @@
   text-transform: uppercase;
 }
 
-.meal-item__remove {
+.meal-item__actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.15rem;
+}
+
+.meal-item__actions button {
   display: grid;
   width: 2rem;
   height: 2rem;
-  flex: 0 0 auto;
   place-items: center;
   padding: 0;
   border: 0;
@@ -55,11 +60,21 @@
     background-color 160ms ease;
 
   &:hover {
-    color: #a23630;
-    background: #f7e7e5;
+    color: var(--color-primary);
+    background: var(--color-primary-soft);
   }
 
   .material-icons-outlined {
     font-size: 1.15rem;
   }
+}
+
+.meal-item__actions .meal-item__remove:hover {
+  color: #a23630;
+  background: #f7e7e5;
+}
+
+.meal-item__actions .meal-item__favorite--active {
+  color: #bd5d55;
+  background: #f7e7e5;
 }

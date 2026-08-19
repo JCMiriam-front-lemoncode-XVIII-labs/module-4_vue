@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import WeeklyPlanView from '@/features/meal-plan/views/WeeklyPlanView.vue'
+import { useFavoritesStore } from '@/features/favorites/stores/favorites.store'
 
 describe('WeeklyPlanView', () => {
   beforeEach(() => {
@@ -20,6 +21,18 @@ describe('WeeklyPlanView', () => {
     expect(wrapper.get('.meal-count strong').text()).toBe('1')
     expect(wrapper.text()).toContain('Crema de calabaza')
     expect(wrapper.text()).toContain('Cena')
+
+    await wrapper
+      .get('button[aria-label="Guardar Crema de calabaza en favoritos"]')
+      .trigger('click')
+
+    expect(useFavoritesStore().favorites[0]).toMatchObject({
+      name: 'Crema de calabaza',
+      defaultCategory: 'dinner',
+    })
+    expect(
+      wrapper.get('button[aria-label="Crema de calabaza está en favoritos"]').classes(),
+    ).toContain('meal-item__favorite--active')
 
     await wrapper.get('button[aria-label="Eliminar Crema de calabaza"]').trigger('click')
 
