@@ -77,4 +77,30 @@ describe('useMealPlanStore', () => {
     expect(store.meals).toEqual([])
     expect(store.mealCount).toBe(0)
   })
+
+  it('migrates legacy meals to dishes with stable references', () => {
+    const store = useMealPlanStore()
+    store.legacyMeals = [
+      {
+        id: 'legacy-meal',
+        name: 'Arroz al horno',
+        description: 'Receta familiar',
+        day: 'sunday',
+        category: 'lunch',
+        createdAt: '2026-08-01T10:00:00.000Z',
+      },
+    ]
+
+    store.migrateLegacyMeals()
+
+    expect(store.legacyMeals).toEqual([])
+    expect(store.meals).toEqual([
+      expect.objectContaining({
+        id: 'legacy-meal',
+        dishId: expect.any(String),
+        name: 'Arroz al horno',
+        day: 'sunday',
+      }),
+    ])
+  })
 })

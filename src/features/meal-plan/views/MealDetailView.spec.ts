@@ -4,9 +4,38 @@ import { describe, expect, it } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
 import MealDetailView from '@/features/meal-plan/views/MealDetailView.vue'
+import { useDishesStore } from '@/features/dishes/stores/dishes.store'
 import { useMealPlanStore } from '@/features/meal-plan/stores/meal-plan.store'
 
 describe('MealDetailView', () => {
+  it('saves a new dish without adding it to the weekly plan', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const dishesStore = useDishesStore()
+    const mealPlanStore = useMealPlanStore()
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: '/meals/new', name: 'meal-create', component: MealDetailView },
+        { path: '/dishes/:id', name: 'dish-detail', component: MealDetailView },
+      ],
+    })
+    await router.push('/meals/new')
+    await router.isReady()
+    const wrapper = mount(MealDetailView, { global: { plugins: [pinia, router] } })
+
+    await wrapper.get('input[name="detail-name"]').setValue('Ensalada de quinoa')
+    await wrapper.get('textarea[name="detail-description"]').setValue('Con tomate y aguacate')
+    const saveButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('Guardar sin planificar'))
+    await saveButton?.trigger('click')
+
+    const createdDish = dishesStore.dishes.find(({ name }) => name === 'Ensalada de quinoa')
+    expect(createdDish?.description).toBe('Con tomate y aguacate')
+    expect(mealPlanStore.meals.some(({ dishId }) => dishId === createdDish?.id)).toBe(false)
+  })
+
   it('edits and repeats a meal on several days', async () => {
     const pinia = createPinia()
     setActivePinia(pinia)
