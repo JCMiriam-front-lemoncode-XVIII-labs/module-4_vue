@@ -46,4 +46,21 @@ describe('useDishesStore', () => {
     expect(repeated.id).toBe(first.id)
     expect(store.dishes.filter(({ id }) => id === first.id)).toHaveLength(1)
   })
+
+  it('records removed mock dishes so persistence can keep them deleted', () => {
+    const store = useDishesStore()
+
+    store.removeDish('dish-tortilla-patatas')
+
+    expect(store.dishes.some(({ id }) => id === 'dish-tortilla-patatas')).toBe(false)
+    expect(store.deletedDishIds).toContain('dish-tortilla-patatas')
+  })
+
+  it('removes dishes hydrated from a state without deletion metadata', () => {
+    const store = useDishesStore()
+    store.$patch({ deletedDishIds: undefined } as never)
+
+    expect(() => store.removeDish('dish-tortilla-patatas')).not.toThrow()
+    expect(store.dishes.some(({ id }) => id === 'dish-tortilla-patatas')).toBe(false)
+  })
 })

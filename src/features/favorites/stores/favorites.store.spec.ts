@@ -27,4 +27,14 @@ describe('useFavoritesStore', () => {
     expect(store.isFavorite('  TORTILLA ')).toBe(true)
     expect(store.isFavorite('Gazpacho')).toBe(false)
   })
+
+  it('toggles a catalog dish using its stable id', () => {
+    const store = useFavoritesStore()
+
+    store.toggleFavorite('dish-tortilla-patatas')
+    expect(store.isFavorite('Tortilla de patatas', 'dish-tortilla-patatas')).toBe(true)
+
+    store.toggleFavorite('dish-tortilla-patatas')
+    expect(store.isFavorite('Tortilla de patatas', 'dish-tortilla-patatas')).toBe(false)
+  })
 })

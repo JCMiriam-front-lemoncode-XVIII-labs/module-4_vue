@@ -50,6 +50,10 @@ export const useFavoritesStore = defineStore(
       favorites.value = favorites.value.filter(({ id }) => id !== favoriteId)
     }
 
+    const removeFavoriteByDish = (dishId: string): void => {
+      favorites.value = favorites.value.filter((favorite) => favorite.dishId !== dishId)
+    }
+
     const isFavorite = (mealName: string, dishId?: string): boolean =>
       favorites.value.some(
         (favorite) =>
@@ -57,7 +61,23 @@ export const useFavoritesStore = defineStore(
           favorite.name.toLocaleLowerCase() === mealName.trim().toLocaleLowerCase(),
       )
 
-    return { favorites, favoriteCount, addFavorite, removeFavorite, isFavorite }
+    const toggleFavorite = (dishId: string): void => {
+      const dish = dishesStore.dishes.find(({ id }) => id === dishId)
+      if (!dish) return
+      const favorite = favorites.value.find((candidate) => candidate.dishId === dishId)
+      if (favorite) removeFavorite(favorite.id)
+      else addFavorite({ dishId, name: dish.name, defaultCategory: dish.category })
+    }
+
+    return {
+      favorites,
+      favoriteCount,
+      addFavorite,
+      removeFavorite,
+      removeFavoriteByDish,
+      isFavorite,
+      toggleFavorite,
+    }
   },
   { persist: true },
 )

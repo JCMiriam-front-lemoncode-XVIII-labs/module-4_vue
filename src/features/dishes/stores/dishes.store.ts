@@ -11,6 +11,7 @@ export const useDishesStore = defineStore(
   'dishes',
   () => {
     const dishes = ref<Dish[]>(initialDishes.map((dish) => ({ ...dish })))
+    const deletedDishIds = ref<Dish['id'][]>([])
     const dishCount = computed(() => dishes.value.length)
 
     const addDish = (input: DishInput): Dish => {
@@ -45,17 +46,22 @@ export const useDishesStore = defineStore(
 
     const removeDish = (dishId: Dish['id']): void => {
       dishes.value = dishes.value.filter(({ id }) => id !== dishId)
+      deletedDishIds.value ??= []
+      if (!deletedDishIds.value.includes(dishId)) deletedDishIds.value.push(dishId)
     }
 
-    return { dishes, dishCount, addDish, updateDish, removeDish }
+    return { dishes, deletedDishIds, dishCount, addDish, updateDish, removeDish }
   },
   {
     persist: {
       afterHydrate: ({ store }) => {
-        const state = store.$state as { dishes: Dish[] }
+        const state = store.$state as { dishes: Dish[]; deletedDishIds: string[] }
+        state.deletedDishIds ??= []
         const persistedIds = new Set(state.dishes.map(({ id }) => id))
         state.dishes.push(
-          ...initialDishes.filter(({ id }) => !persistedIds.has(id)).map((dish) => ({ ...dish })),
+          ...initialDishes
+            .filter(({ id }) => !persistedIds.has(id) && !state.deletedDishIds.includes(id))
+            .map((dish) => ({ ...dish })),
         )
       },
     },
