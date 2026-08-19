@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Footer from '@/common/components/footer/Footer.vue'
 import Header from '@/common/components/header/Header.vue'
+import ToastContainer from '@/common/components/toast-container/ToastContainer.vue'
 </script>
 
 <template>
@@ -11,6 +12,7 @@ import Header from '@/common/components/header/Header.vue'
       <slot />
     </main>
     <Footer />
+    <ToastContainer />
   </div>
 </template>
 
