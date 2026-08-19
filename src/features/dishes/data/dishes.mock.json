@@ -1,0 +1,44 @@
+[
+  {
+    "id": "dish-tortilla-patatas",
+    "name": "Tortilla de patatas",
+    "description": "Tortilla jugosa de patata y cebolla, perfecta para acompañar con una ensalada.",
+    "category": "dinner",
+    "createdAt": "2026-08-01T10:00:00.000Z"
+  },
+  {
+    "id": "dish-lentejas-verduras",
+    "name": "Lentejas con verduras",
+    "description": "Guiso de lentejas con zanahoria, pimiento, puerro y un toque de pimentón.",
+    "category": "lunch",
+    "createdAt": "2026-08-01T10:05:00.000Z"
+  },
+  {
+    "id": "dish-tostadas-aguacate",
+    "name": "Tostadas de aguacate",
+    "description": "Pan integral tostado con aguacate, tomate, semillas y aceite de oliva.",
+    "category": "breakfast",
+    "createdAt": "2026-08-01T10:10:00.000Z"
+  },
+  {
+    "id": "dish-pasta-pesto",
+    "name": "Pasta al pesto",
+    "description": "Pasta con pesto de albahaca, piñones y parmesano, lista en pocos minutos.",
+    "category": "lunch",
+    "createdAt": "2026-08-01T10:15:00.000Z"
+  },
+  {
+    "id": "dish-yogur-fruta",
+    "name": "Yogur con fruta",
+    "description": "Yogur natural con fruta de temporada, copos de avena y un poco de canela.",
+    "category": "snack",
+    "createdAt": "2026-08-01T10:20:00.000Z"
+  },
+  {
+    "id": "dish-salmon-horno",
+    "name": "Salmón al horno",
+    "description": "Salmón horneado con limón y hierbas, acompañado de verduras asadas.",
+    "category": "dinner",
+    "createdAt": "2026-08-01T10:25:00.000Z"
+  }
+]

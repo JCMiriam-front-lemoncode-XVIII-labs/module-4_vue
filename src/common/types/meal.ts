@@ -3,17 +3,26 @@ export type Weekday =
 
 export type MealCategory = 'breakfast' | 'lunch' | 'snack' | 'dinner'
 
-export interface Meal {
+export interface Dish {
   id: string
   name: string
   description?: string
-  day: Weekday
   category: MealCategory
   createdAt: string
 }
 
+export interface PlannedMeal {
+  id: string
+  dishId: Dish['id']
+  day: Weekday
+  createdAt: string
+}
+
+export type Meal = PlannedMeal & Pick<Dish, 'name' | 'description' | 'category'>
+
 export interface FavoriteMeal {
   id: string
+  dishId?: Dish['id']
   name: string
   defaultCategory: MealCategory
 }

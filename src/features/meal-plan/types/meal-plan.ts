@@ -1,6 +1,7 @@
-import type { Meal, MealCategory, Weekday } from '@/common/types/meal'
+import type { Dish, Meal, MealCategory, Weekday } from '@/common/types/meal'
 
 export interface CreateMealInput {
+  dishId?: Dish['id']
   name: string
   description?: string
   day: Weekday

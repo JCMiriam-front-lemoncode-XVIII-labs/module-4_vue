@@ -26,6 +26,7 @@ describe('DayCard', () => {
         meals: [
           {
             id: 'meal-1',
+            dishId: 'dish-1',
             name: 'Lentejas',
             day: 'monday',
             category: 'lunch',

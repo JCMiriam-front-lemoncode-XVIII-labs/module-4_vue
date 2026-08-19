@@ -2,132 +2,152 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 
 import { WEEKDAYS } from '@/common/constants/weekdays'
-import type { Meal } from '@/common/types/meal'
+import type { Dish, Meal, PlannedMeal, Weekday } from '@/common/types/meal'
+import { useDishesStore } from '@/features/dishes/stores/dishes.store'
 import type {
   CreateMealInput,
   MealDetailsInput,
-  UpdateMealInput,
   WeeklyMeals,
 } from '@/features/meal-plan/types/meal-plan'
 
-const createEmptyWeeklyMeals = (): WeeklyMeals =>
-  WEEKDAYS.reduce<WeeklyMeals>((weeklyMeals, { value }) => {
-    weeklyMeals[value] = []
+type LegacyMeal = Omit<Meal, 'dishId'> & { dishId?: string }
 
-    return weeklyMeals
-  }, {} as WeeklyMeals)
+const emptyWeek = (): WeeklyMeals =>
+  WEEKDAYS.reduce((week, { value }) => ({ ...week, [value]: [] }), {} as WeeklyMeals)
 
 export const useMealPlanStore = defineStore(
   'meal-plan',
   () => {
-    const meals = ref<Meal[]>([])
+    const plannedMeals = ref<PlannedMeal[]>([])
+    const legacyMeals = ref<LegacyMeal[]>([])
+    const dishesStore = useDishesStore()
 
-    const mealCount = computed(() => meals.value.length)
-
-    const mealsByDay = computed<WeeklyMeals>(() => {
-      const weeklyMeals = createEmptyWeeklyMeals()
-
-      for (const meal of meals.value) {
-        weeklyMeals[meal.day].push(meal)
+    const migrateLegacyMeals = (): void => {
+      if (!legacyMeals.value.length) return
+      for (const legacy of legacyMeals.value) {
+        let dish = dishesStore.dishes.find(
+          ({ name, category }) =>
+            name.toLocaleLowerCase() === legacy.name.toLocaleLowerCase() &&
+            category === legacy.category,
+        )
+        dish ??= dishesStore.addDish(legacy)
+        if (!plannedMeals.value.some(({ id }) => id === legacy.id)) {
+          plannedMeals.value.push({
+            id: legacy.id,
+            dishId: dish.id,
+            day: legacy.day,
+            createdAt: legacy.createdAt,
+          })
+        }
       }
+      legacyMeals.value = []
+    }
 
-      return weeklyMeals
+    const meals = computed<Meal[]>(() => {
+      migrateLegacyMeals()
+      return plannedMeals.value.flatMap((planned) => {
+        const dish = dishesStore.dishes.find(({ id }) => id === planned.dishId)
+        return dish
+          ? [
+              {
+                ...planned,
+                name: dish.name,
+                description: dish.description,
+                category: dish.category,
+              },
+            ]
+          : []
+      })
+    })
+    const mealCount = computed(() => plannedMeals.value.length)
+    const mealsByDay = computed(() => {
+      const week = emptyWeek()
+      for (const meal of meals.value) week[meal.day].push(meal)
+      return week
     })
 
+    const scheduleDish = (dishId: Dish['id'], day: Weekday): PlannedMeal => {
+      const existing = plannedMeals.value.find((meal) => meal.dishId === dishId && meal.day === day)
+      if (existing) return existing
+      const planned = { id: crypto.randomUUID(), dishId, day, createdAt: new Date().toISOString() }
+      plannedMeals.value.push(planned)
+      return planned
+    }
+
     const addMeal = (input: CreateMealInput): Meal => {
-      const name = input.name.trim()
-
-      if (!name) {
-        throw new Error('El nombre del plato es obligatorio')
-      }
-
-      const existingMeal = meals.value.find(
-        (meal) =>
-          meal.day === input.day &&
-          meal.category === input.category &&
-          meal.name.toLocaleLowerCase() === name.toLocaleLowerCase(),
-      )
-
-      if (existingMeal) {
-        return existingMeal
-      }
-
-      const meal: Meal = {
-        ...input,
-        id: crypto.randomUUID(),
-        name,
-        description: input.description?.trim() ?? '',
-        createdAt: new Date().toISOString(),
-      }
-
-      meals.value.push(meal)
-
-      return meal
+      migrateLegacyMeals()
+      const normalizedName = input.name.trim().toLocaleLowerCase()
+      const dish = input.dishId
+        ? dishesStore.dishes.find(({ id }) => id === input.dishId)
+        : (dishesStore.dishes.find(
+            ({ name, category }) =>
+              name.toLocaleLowerCase() === normalizedName && category === input.category,
+          ) ?? dishesStore.addDish(input))
+      if (!dish) throw new Error('La comida no existe')
+      const planned = scheduleDish(dish.id, input.day)
+      return { ...planned, name: dish.name, description: dish.description, category: dish.category }
     }
 
     const removeMeal = (mealId: Meal['id']): void => {
-      meals.value = meals.value.filter(({ id }) => id !== mealId)
+      plannedMeals.value = plannedMeals.value.filter(({ id }) => id !== mealId)
     }
 
-    const updateMeal = (mealId: Meal['id'], input: UpdateMealInput): void => {
-      const meal = meals.value.find(({ id }) => id === mealId)
-      const name = input.name.trim()
-
-      if (!meal || !name) {
-        return
+    const updateMeal = (mealId: Meal['id'], input: CreateMealInput): void => {
+      const planned = plannedMeals.value.find(({ id }) => id === mealId)
+      if (!planned) return
+      dishesStore.updateDish(planned.dishId, input)
+      if (planned.day !== input.day) {
+        plannedMeals.value = plannedMeals.value.filter(
+          (meal) =>
+            meal.id !== mealId && !(meal.dishId === planned.dishId && meal.day === input.day),
+        )
+        planned.day = input.day
+        plannedMeals.value.push(planned)
       }
+    }
 
-      Object.assign(meal, { ...input, name, description: input.description?.trim() ?? '' })
+    const syncDishDays = (dishId: Dish['id'], selectedDays: Weekday[]): PlannedMeal[] => {
+      const days = [...new Set(selectedDays)]
+      plannedMeals.value = plannedMeals.value.filter(
+        (meal) => meal.dishId !== dishId || days.includes(meal.day),
+      )
+      return days.map((day) => scheduleDish(dishId, day))
     }
 
     const syncMealDays = (
       mealId: Meal['id'],
       details: MealDetailsInput,
-      selectedDays: Meal['day'][],
+      days: Weekday[],
     ): Meal[] => {
-      const sourceMeal = meals.value.find(({ id }) => id === mealId)
-      const name = details.name.trim()
-
-      if (!sourceMeal || !name || !selectedDays.length) {
-        return []
-      }
-
-      const group = meals.value.filter(
-        (meal) =>
-          meal.name.toLocaleLowerCase() === sourceMeal.name.toLocaleLowerCase() &&
-          meal.category === sourceMeal.category,
-      )
-      const unrelatedMeals = meals.value.filter((meal) => !group.some(({ id }) => id === meal.id))
-      const uniqueDays = [...new Set(selectedDays)]
-      const synchronizedMeals = uniqueDays.map((selectedDay) => {
-        const existingMeal = group.find(({ day }) => day === selectedDay)
-
-        return {
-          id: existingMeal?.id ?? crypto.randomUUID(),
-          createdAt: existingMeal?.createdAt ?? new Date().toISOString(),
-          ...details,
-          name,
-          description: details.description?.trim() ?? '',
-          day: selectedDay,
-        }
-      })
-
-      meals.value = [...unrelatedMeals, ...synchronizedMeals]
-
-      return synchronizedMeals
+      const planned = plannedMeals.value.find(({ id }) => id === mealId)
+      if (!planned) return []
+      dishesStore.updateDish(planned.dishId, details)
+      syncDishDays(planned.dishId, days)
+      return meals.value.filter(({ dishId }) => dishId === planned.dishId)
     }
 
     return {
+      plannedMeals,
+      legacyMeals,
       meals,
       mealCount,
       mealsByDay,
       addMeal,
       updateMeal,
+      scheduleDish,
+      syncDishDays,
       syncMealDays,
       removeMeal,
+      migrateLegacyMeals,
     }
   },
   {
-    persist: true,
+    persist: {
+      afterHydrate: ({ store }) => {
+        const state = store.$state as { meals?: LegacyMeal[]; legacyMeals: LegacyMeal[] }
+        if (state.meals?.length) state.legacyMeals = state.meals
+        store.migrateLegacyMeals()
+      },
+    },
   },
 )
