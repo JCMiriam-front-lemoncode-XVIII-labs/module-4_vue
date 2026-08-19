@@ -26,6 +26,10 @@ defineOptions({ name: 'MealPlannerHeader' })
           <span class="material-icons-outlined" aria-hidden="true">favorite_border</span>
           <span>Favoritos</span>
         </RouterLink>
+        <RouterLink class="main-nav__link" to="/dishes">
+          <span class="material-icons-outlined" aria-hidden="true">menu_book</span>
+          <span>Comidas</span>
+        </RouterLink>
       </nav>
     </div>
   </header>

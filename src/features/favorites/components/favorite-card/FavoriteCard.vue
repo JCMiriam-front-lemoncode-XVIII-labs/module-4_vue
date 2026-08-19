@@ -21,6 +21,7 @@ watch(day, () => (wasAdded.value = false))
 
 const addToPlan = (): void => {
   mealPlanStore.addMeal({
+    dishId: props.favorite.dishId,
     name: props.favorite.name,
     day: day.value,
     category: props.favorite.defaultCategory,

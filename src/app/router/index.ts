@@ -8,6 +8,18 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Plan semanal' },
   },
   {
+    path: '/dishes',
+    name: 'dishes',
+    component: () => import('@/features/dishes/views/DishesView.vue'),
+    meta: { title: 'Comidas' },
+  },
+  {
+    path: '/dishes/:id',
+    name: 'dish-detail',
+    component: () => import('@/features/meal-plan/views/MealDetailView.vue'),
+    meta: { title: 'Detalle de la comida' },
+  },
+  {
     path: '/favorites',
     name: 'favorites',
     component: () => import('@/features/favorites/views/FavoritesView.vue'),

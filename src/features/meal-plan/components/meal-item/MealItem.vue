@@ -22,10 +22,11 @@ const categoryLabel = computed(
   () => MEAL_CATEGORIES.find(({ value }) => value === props.meal.category)?.label ?? '',
 )
 
-const isFavorite = computed(() => favoritesStore.isFavorite(props.meal.name))
+const isFavorite = computed(() => favoritesStore.isFavorite(props.meal.name, props.meal.dishId))
 
 const saveAsFavorite = (): void => {
   favoritesStore.addFavorite({
+    dishId: props.meal.dishId,
     name: props.meal.name,
     defaultCategory: props.meal.category,
   })
@@ -36,7 +37,7 @@ const saveAsFavorite = (): void => {
   <li class="meal-item">
     <div class="meal-item__content">
       <span class="meal-item__category">{{ categoryLabel }}</span>
-      <RouterLink :to="{ name: 'meal-detail', params: { id: meal.id } }">
+      <RouterLink :to="{ name: 'dish-detail', params: { id: meal.dishId } }">
         {{ meal.name }}
       </RouterLink>
     </div>
