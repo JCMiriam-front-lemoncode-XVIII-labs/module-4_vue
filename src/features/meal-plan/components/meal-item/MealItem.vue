@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
 
 import { MEAL_CATEGORIES } from '@/common/constants/meal-categories'
 import type { Meal } from '@/common/types/meal'
@@ -35,7 +36,9 @@ const saveAsFavorite = (): void => {
   <li class="meal-item">
     <div class="meal-item__content">
       <span class="meal-item__category">{{ categoryLabel }}</span>
-      <p>{{ meal.name }}</p>
+      <RouterLink :to="{ name: 'meal-detail', params: { id: meal.id } }">
+        {{ meal.name }}
+      </RouterLink>
     </div>
     <div class="meal-item__actions">
       <button
@@ -44,7 +47,6 @@ const saveAsFavorite = (): void => {
         :aria-label="
           isFavorite ? `${meal.name} está en favoritos` : `Guardar ${meal.name} en favoritos`
         "
-        :title="isFavorite ? `${meal.name} está en favoritos` : `Guardar ${meal.name} en favoritos`"
         @click="saveAsFavorite"
       >
         <span class="material-icons-outlined" aria-hidden="true">
@@ -55,7 +57,6 @@ const saveAsFavorite = (): void => {
         class="meal-item__remove"
         type="button"
         :aria-label="`Eliminar ${meal.name}`"
-        :title="`Eliminar ${meal.name}`"
         @click="emit('remove', meal.id)"
       >
         <span class="material-icons-outlined" aria-hidden="true">delete_outline</span>

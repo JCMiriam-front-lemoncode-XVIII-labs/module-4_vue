@@ -1,4 +1,5 @@
 .meal-item {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -20,13 +21,27 @@
 .meal-item__content {
   min-width: 0;
 
-  p {
+  a {
+    display: block;
     overflow: hidden;
     margin: 0.18rem 0 0;
+    color: var(--color-text);
     font-size: 0.86rem;
     font-weight: 650;
+    text-decoration: none;
     text-overflow: ellipsis;
     white-space: nowrap;
+
+    &:hover {
+      color: var(--color-primary);
+      text-decoration: underline;
+    }
+
+    &::after {
+      position: absolute;
+      content: '';
+      inset: 0;
+    }
   }
 }
 
@@ -39,6 +54,8 @@
 }
 
 .meal-item__actions {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex: 0 0 auto;
   gap: 0.15rem;

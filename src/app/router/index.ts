@@ -14,6 +14,18 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'Platos favoritos' },
   },
   {
+    path: '/meals/new',
+    name: 'meal-create',
+    component: () => import('@/features/meal-plan/views/MealDetailView.vue'),
+    meta: { title: 'Añadir comida' },
+  },
+  {
+    path: '/meals/:id',
+    name: 'meal-detail',
+    component: () => import('@/features/meal-plan/views/MealDetailView.vue'),
+    meta: { title: 'Detalle del plato' },
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
     component: () => import('@/common/views/NotFoundView.vue'),

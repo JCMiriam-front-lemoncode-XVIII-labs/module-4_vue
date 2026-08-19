@@ -12,6 +12,7 @@ describe('DayCard', () => {
   it('renders its empty state', () => {
     const wrapper = mount(DayCard, {
       props: { day: monday, meals: [] },
+      global: { stubs: { RouterLink: { template: '<a><slot /></a>' } } },
     })
 
     expect(wrapper.text()).toContain('Lunes')
@@ -32,6 +33,7 @@ describe('DayCard', () => {
           },
         ],
       },
+      global: { stubs: { RouterLink: { template: '<a><slot /></a>' } } },
     })
 
     expect(wrapper.text()).toContain('Comida')
