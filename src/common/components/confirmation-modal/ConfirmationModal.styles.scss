@@ -1,0 +1,78 @@
+.modal-backdrop {
+  align-items: center;
+  background: rgb(20 31 24 / 58%);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 1rem;
+  position: fixed;
+  z-index: 100;
+}
+
+.confirmation-modal {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 1.5rem 4rem rgb(16 35 23 / 28%);
+  display: grid;
+  gap: 1rem;
+  max-width: 28rem;
+  outline: none;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  width: 100%;
+}
+
+.confirmation-modal__icon {
+  align-items: center;
+  background: #fcecec;
+  border-radius: 50%;
+  color: #9f3535;
+  display: inline-flex;
+  height: 3rem;
+  justify-content: center;
+  width: 3rem;
+}
+
+.confirmation-modal h2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.confirmation-modal p {
+  color: var(--color-text-muted);
+  line-height: 1.55;
+  margin: 0.55rem 0 0;
+}
+
+.confirmation-modal__actions {
+  display: flex;
+  gap: 0.65rem;
+  justify-content: flex-end;
+
+  button {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    min-height: 2.75rem;
+    padding: 0 1rem;
+  }
+
+  .confirmation-modal__confirm {
+    background: #9f3535;
+    border-color: #9f3535;
+    color: white;
+  }
+}
+
+@media (max-width: 28rem) {
+  .confirmation-modal__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}

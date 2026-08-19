@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
-import { RouterLink } from 'vue-router'
 
 import { WEEKDAYS } from '@/common/constants/weekdays'
 import type { MealCategory, Weekday } from '@/common/types/meal'
 import DayCard from '@/features/meal-plan/components/day-card/DayCard.vue'
 import MealFilters from '@/features/meal-plan/components/meal-filters/MealFilters.vue'
+import PlanActions from '@/features/meal-plan/components/plan-actions/PlanActions.vue'
 import { useMealPlanStore } from '@/features/meal-plan/stores/meal-plan.store'
 
 const mealPlanStore = useMealPlanStore()
@@ -59,12 +59,7 @@ const mealsForDay = (day: Weekday) => filteredMeals.value.filter((meal) => meal.
       </div>
     </header>
 
-    <div class="plan-actions">
-      <RouterLink :to="{ name: 'meal-create' }">
-        <span class="material-icons-outlined" aria-hidden="true">add</span>
-        Añadir comida
-      </RouterLink>
-    </div>
+    <PlanActions :meals="meals" />
 
     <MealFilters
       v-model:query="query"
