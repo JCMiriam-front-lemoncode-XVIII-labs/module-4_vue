@@ -4,6 +4,7 @@ import { computed, ref, watch } from 'vue'
 import { MEAL_CATEGORIES } from '@/common/constants/meal-categories'
 import { WEEKDAYS } from '@/common/constants/weekdays'
 import type { FavoriteMeal, Weekday } from '@/common/types/meal'
+import { useToastStore } from '@/common/stores/toast.store'
 import { useMealPlanStore } from '@/features/meal-plan/stores/meal-plan.store'
 
 defineOptions({ name: 'FavoriteCard' })
@@ -11,6 +12,7 @@ defineOptions({ name: 'FavoriteCard' })
 const props = defineProps<{ favorite: FavoriteMeal }>()
 const emit = defineEmits<{ remove: [favoriteId: FavoriteMeal['id']] }>()
 const mealPlanStore = useMealPlanStore()
+const toastStore = useToastStore()
 const day = ref<Weekday>('monday')
 const wasAdded = ref(false)
 const categoryLabel = computed(
@@ -27,6 +29,12 @@ const addToPlan = (): void => {
     category: props.favorite.defaultCategory,
   })
   wasAdded.value = true
+  toastStore.showToast(`${props.favorite.name} añadida al plan.`)
+}
+
+const removeFavorite = (): void => {
+  emit('remove', props.favorite.id)
+  toastStore.showToast('Eliminada de favoritos.', 'info')
 }
 </script>
 
@@ -42,7 +50,7 @@ const addToPlan = (): void => {
         class="favorite-card__remove"
         type="button"
         :aria-label="`Eliminar ${favorite.name} de favoritos`"
-        @click="emit('remove', favorite.id)"
+        @click="removeFavorite"
       >
         <span class="material-icons-outlined" aria-hidden="true">delete_outline</span>
       </button>

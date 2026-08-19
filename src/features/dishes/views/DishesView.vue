@@ -6,6 +6,7 @@ import { RouterLink } from 'vue-router'
 import ConfirmationModal from '@/common/components/confirmation-modal/ConfirmationModal.vue'
 import { MEAL_CATEGORIES } from '@/common/constants/meal-categories'
 import type { Dish, MealCategory } from '@/common/types/meal'
+import { useToastStore } from '@/common/stores/toast.store'
 import { useDishesStore } from '@/features/dishes/stores/dishes.store'
 import { useFavoritesStore } from '@/features/favorites/stores/favorites.store'
 import { useMealPlanStore } from '@/features/meal-plan/stores/meal-plan.store'
@@ -13,6 +14,7 @@ import { useMealPlanStore } from '@/features/meal-plan/stores/meal-plan.store'
 const dishesStore = useDishesStore()
 const favoritesStore = useFavoritesStore()
 const mealPlanStore = useMealPlanStore()
+const toastStore = useToastStore()
 const { dishes, dishCount } = storeToRefs(dishesStore)
 const query = ref('')
 const category = ref<MealCategory | 'all'>('all')
@@ -44,7 +46,14 @@ const removeDish = (): void => {
   }
   favoritesStore.removeFavoriteByDish(dishId)
   dishesStore.removeDish(dishId)
+  toastStore.showToast('Comida eliminada del catálogo.', 'info')
   dishToDelete.value = undefined
+}
+
+const toggleDishFavorite = (dish: Dish): void => {
+  const wasFavorite = favoritesStore.isFavorite(dish.name, dish.id)
+  favoritesStore.toggleFavorite(dish.id)
+  toastStore.showToast(wasFavorite ? 'Eliminada de favoritos.' : 'Añadida a favoritos.')
 }
 </script>
 
@@ -110,7 +119,7 @@ const removeDish = (): void => {
                 ? `Quitar ${dish.name} de favoritos`
                 : `Añadir ${dish.name} a favoritos`
             "
-            @click.stop="favoritesStore.toggleFavorite(dish.id)"
+            @click.stop="toggleDishFavorite(dish)"
           >
             <span class="material-icons-outlined" aria-hidden="true">{{
               favoritesStore.isFavorite(dish.name, dish.id) ? 'favorite' : 'favorite_border'

@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router'
 
 import { MEAL_CATEGORIES } from '@/common/constants/meal-categories'
 import type { Meal } from '@/common/types/meal'
+import { useToastStore } from '@/common/stores/toast.store'
 import { useFavoritesStore } from '@/features/favorites/stores/favorites.store'
 
 defineOptions({ name: 'MealItem' })
@@ -17,6 +18,7 @@ const emit = defineEmits<{
 }>()
 
 const favoritesStore = useFavoritesStore()
+const toastStore = useToastStore()
 
 const categoryLabel = computed(
   () => MEAL_CATEGORIES.find(({ value }) => value === props.meal.category)?.label ?? '',
@@ -25,11 +27,21 @@ const categoryLabel = computed(
 const isFavorite = computed(() => favoritesStore.isFavorite(props.meal.name, props.meal.dishId))
 
 const saveAsFavorite = (): void => {
+  if (isFavorite.value) {
+    toastStore.showToast('Esta comida ya está en favoritos.', 'info')
+    return
+  }
   favoritesStore.addFavorite({
     dishId: props.meal.dishId,
     name: props.meal.name,
     defaultCategory: props.meal.category,
   })
+  toastStore.showToast('Añadida a favoritos.')
+}
+
+const removeFromPlan = (): void => {
+  emit('remove', props.meal.id)
+  toastStore.showToast('Comida eliminada del plan.', 'info')
 }
 </script>
 
@@ -58,7 +70,7 @@ const saveAsFavorite = (): void => {
         class="meal-item__remove"
         type="button"
         :aria-label="`Eliminar ${meal.name}`"
-        @click="emit('remove', meal.id)"
+        @click="removeFromPlan"
       >
         <span class="material-icons-outlined" aria-hidden="true">delete_outline</span>
       </button>

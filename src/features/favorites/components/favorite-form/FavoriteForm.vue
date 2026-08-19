@@ -3,11 +3,13 @@ import { ref, useId } from 'vue'
 
 import { MEAL_CATEGORIES } from '@/common/constants/meal-categories'
 import type { MealCategory } from '@/common/types/meal'
+import { useToastStore } from '@/common/stores/toast.store'
 import { useFavoritesStore } from '@/features/favorites/stores/favorites.store'
 
 defineOptions({ name: 'FavoriteForm' })
 
 const favoritesStore = useFavoritesStore()
+const toastStore = useToastStore()
 const fieldId = useId()
 const name = ref('')
 const category = ref<MealCategory>('lunch')
@@ -23,6 +25,7 @@ const handleSubmit = (): void => {
   name.value = ''
   category.value = 'lunch'
   errorMessage.value = ''
+  toastStore.showToast('Comida guardada en favoritos.')
 }
 </script>
 

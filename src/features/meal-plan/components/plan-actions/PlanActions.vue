@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
 import ConfirmationModal from '@/common/components/confirmation-modal/ConfirmationModal.vue'
+import { useToastStore } from '@/common/stores/toast.store'
 import type { Meal } from '@/common/types/meal'
 import { useMealPlanStore } from '@/features/meal-plan/stores/meal-plan.store'
 import { formatWeeklyPlan } from '@/features/meal-plan/utils/format-weekly-plan'
@@ -11,15 +12,15 @@ defineOptions({ name: 'PlanActions' })
 
 const props = defineProps<{ meals: Meal[] }>()
 const mealPlanStore = useMealPlanStore()
-const feedbackMessage = ref('')
+const toastStore = useToastStore()
 const isClearModalOpen = ref(false)
 
 const copyPlan = async (): Promise<void> => {
   try {
     await navigator.clipboard.writeText(formatWeeklyPlan(props.meals))
-    feedbackMessage.value = 'Menú copiado al portapapeles.'
+    toastStore.showToast('Menú copiado al portapapeles.')
   } catch {
-    feedbackMessage.value = 'No se pudo copiar el menú.'
+    toastStore.showToast('No se pudo copiar el menú.', 'error')
   }
 }
 
@@ -31,13 +32,13 @@ const downloadPlan = (): void => {
   link.download = 'plan-semanal.txt'
   link.click()
   URL.revokeObjectURL(url)
-  feedbackMessage.value = 'Menú descargado.'
+  toastStore.showToast('Menú descargado.')
 }
 
 const clearPlan = (): void => {
   mealPlanStore.clearPlan()
   isClearModalOpen.value = false
-  feedbackMessage.value = 'Plan semanal vaciado.'
+  toastStore.showToast('Plan semanal vaciado.')
 }
 
 const printPlan = (): void => window.print()
@@ -72,9 +73,6 @@ const printPlan = (): void => window.print()
         Vaciar
       </button>
     </div>
-    <p v-if="feedbackMessage" class="plan-tools__feedback" role="status">
-      {{ feedbackMessage }}
-    </p>
     <ConfirmationModal
       :open="isClearModalOpen"
       title="¿Vaciar el plan semanal?"

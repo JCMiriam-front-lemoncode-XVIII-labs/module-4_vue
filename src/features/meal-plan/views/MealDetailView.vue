@@ -5,6 +5,7 @@ import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { MEAL_CATEGORIES } from '@/common/constants/meal-categories'
 import { WEEKDAYS } from '@/common/constants/weekdays'
 import type { MealCategory, Weekday } from '@/common/types/meal'
+import { useToastStore } from '@/common/stores/toast.store'
 import { useDishesStore } from '@/features/dishes/stores/dishes.store'
 import { useFavoritesStore } from '@/features/favorites/stores/favorites.store'
 import { useMealPlanStore } from '@/features/meal-plan/stores/meal-plan.store'
@@ -14,6 +15,7 @@ const router = useRouter()
 const mealPlanStore = useMealPlanStore()
 const dishesStore = useDishesStore()
 const favoritesStore = useFavoritesStore()
+const toastStore = useToastStore()
 const isCreateMode = computed(() => route.name === 'meal-create')
 const meal = computed(() => mealPlanStore.meals.find(({ id }) => id === route.params.id))
 const dish = computed(() =>
@@ -26,7 +28,6 @@ const description = ref('')
 const category = ref<MealCategory>('lunch')
 const selectedDays = ref<Weekday[]>(['monday'])
 const errorMessage = ref('')
-const feedbackMessage = ref('')
 const isFavorite = computed(
   () => Boolean(name.value.trim()) && favoritesStore.isFavorite(name.value, dish.value?.id),
 )
@@ -69,7 +70,7 @@ const saveMeal = async (): Promise<void> => {
     mealPlanStore.syncDishDays(dish.value.id, selectedDays.value)
   }
   errorMessage.value = ''
-  feedbackMessage.value = 'Cambios guardados.'
+  toastStore.showToast('Cambios guardados.')
 }
 
 const saveToCatalog = async (): Promise<void> => {
@@ -84,7 +85,7 @@ const saveToCatalog = async (): Promise<void> => {
   })
   await router.replace({ name: 'dish-detail', params: { id: createdDish.id } })
   errorMessage.value = ''
-  feedbackMessage.value = 'Comida guardada en el catálogo.'
+  toastStore.showToast('Comida guardada en el catálogo.')
 }
 
 const deleteMeal = async (): Promise<void> => {
@@ -93,6 +94,7 @@ const deleteMeal = async (): Promise<void> => {
     mealPlanStore.removeMeal(planned.id)
   }
   await router.push({ name: 'weekly-plan' })
+  toastStore.showToast('Comida eliminada del plan.', 'info')
 }
 
 const addToFavorites = (): void => {
@@ -105,7 +107,7 @@ const addToFavorites = (): void => {
     name: name.value,
     defaultCategory: category.value,
   })
-  feedbackMessage.value = 'Añadida a favoritos.'
+  toastStore.showToast('Añadida a favoritos.')
 }
 </script>
 
@@ -176,7 +178,6 @@ const addToFavorites = (): void => {
         </button>
       </aside>
     </form>
-    <p v-if="feedbackMessage" class="meal-detail__feedback" role="status">{{ feedbackMessage }}</p>
   </section>
   <section v-else class="meal-detail meal-detail--missing">
     <span class="material-icons-outlined" aria-hidden="true">no_meals</span>
