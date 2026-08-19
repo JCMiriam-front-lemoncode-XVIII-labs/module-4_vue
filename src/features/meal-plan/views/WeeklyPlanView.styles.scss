@@ -1,0 +1,177 @@
+.weekly-plan {
+  padding: clamp(2.25rem, 5vw, 4.5rem) 0 4rem;
+}
+
+.page-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 2.25rem;
+  gap: 2rem;
+}
+
+.page-heading__eyebrow {
+  margin: 0 0 0.7rem;
+  color: var(--color-primary);
+  font-size: 0.73rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.page-heading h1 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2.25rem, 5vw, 4.2rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.page-heading__description {
+  max-width: 40rem;
+  margin: 1rem 0 0;
+  color: var(--color-text-muted);
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+}
+
+.meal-count {
+  display: flex;
+  min-width: 10rem;
+  align-items: center;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgb(255 255 255 / 60%);
+  gap: 0.7rem;
+}
+
+.meal-count strong {
+  color: var(--color-primary);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.meal-count span {
+  max-width: 5rem;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  line-height: 1.25;
+}
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.day-card {
+  min-height: 16rem;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.day-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.15rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+  background: linear-gradient(135deg, #fff, #f8f7f2);
+}
+
+.day-card__header > div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+.day-card__header span {
+  color: var(--color-primary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.day-card__header h2 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.day-card__header .day-card__count {
+  display: grid;
+  width: 1.65rem;
+  height: 1.65rem;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+  font-size: 0.7rem;
+}
+
+.day-card__empty {
+  display: grid;
+  min-height: 11.75rem;
+  place-content: center;
+  justify-items: center;
+  padding: 1rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.day-card__empty .material-icons-outlined {
+  margin-bottom: 0.7rem;
+  opacity: 0.42;
+  font-size: 2rem;
+}
+
+.day-card__empty p {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+
+.day-card__empty small {
+  margin-top: 0.2rem;
+  font-size: 0.72rem;
+}
+
+@media (max-width: 68rem) {
+  .week-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 48rem) {
+  .page-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .week-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 32rem) {
+  .week-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .day-card {
+    min-height: 12rem;
+  }
+
+  .day-card__empty {
+    min-height: 8rem;
+  }
+}
